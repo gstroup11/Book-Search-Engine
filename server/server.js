@@ -1,29 +1,32 @@
 const express = require('express');
 const path = require('path');
-const { ApolloServer } = require('apollo-server-express');
+// Import the ApolloServer class
+const { ApolloServer } = require('@apollo/server');
+const { expressMiddleware } = require('@apollo/server/express4');
 const { authMiddleware } = require('./utils/auth');
+
+// Import the two parts of a GraphQL schema
 const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
 
 const PORT = process.env.PORT || 3001;
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
-    // Apply authentication middleware to the context
-    authMiddleware(req, null, () => {}); // Use req object
-    return { /* any additional context data */ };
-  },
 });
 
 const app = express();
 
+// Create a new instance of an Apollo server with the GraphQL schema
 const startApolloServer = async () => {
   await server.start();
-
+  
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
+  
+  app.use('/graphql', expressMiddleware(server, {
+    context: authMiddleware
+  }));
 
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
@@ -33,8 +36,6 @@ const startApolloServer = async () => {
     });
   }
 
-  server.applyMiddleware({ app, path: '/graphql' }); // Apply Apollo Server middleware to the '/graphql' path
-
   db.once('open', () => {
     app.listen(PORT, () => {
       console.log(`API server running on port ${PORT}!`);
@@ -43,4 +44,5 @@ const startApolloServer = async () => {
   });
 };
 
+// Call the async function to start the server
 startApolloServer();

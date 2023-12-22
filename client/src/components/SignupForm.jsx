@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useMutation } from '@apollo/client';
-import { CREATE_USER } from '../utils/mutations';
+import { ADD_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
 
 const SignupForm = () => {
@@ -13,7 +13,7 @@ const SignupForm = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   // use mutation for creating a user
-  const [createUser, {error}] = useMutation(CREATE_USER);
+  const [createUser, {error}] = useMutation(ADD_USER);
 
   useEffect(() => {
     if (error) {

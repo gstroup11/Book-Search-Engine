@@ -12,7 +12,7 @@ mutation login($email: String!, $password: String!) {
 }
 `;
 
-export const CREATE_USER = gql`
+export const ADD_USER = gql`
 mutation createUser($username: String!, $email: String!, $password: String!) {
     createUser(username: $username, email: $email, password: $password) {
         token
@@ -43,7 +43,7 @@ mutation saveBook($book: BookInput!) {
 }
 `;
 
-export const DELETE_BOOK = gql`
+export const REMOVE_BOOK = gql`
 mutation deleteBook($bookId: ID!) {
     deleteBook(bookId: $bookId) {
         _id
